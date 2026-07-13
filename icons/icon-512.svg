@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 192 192">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1C52B4"/>
+      <stop offset="100%" stop-color="#0F3A8C"/>
+    </linearGradient>
+    <clipPath id="round">
+      <rect width="192" height="192" rx="42" ry="42"/>
+    </clipPath>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="192" height="192" rx="42" fill="url(#bg)"/>
+  
+  <!-- White text: Shmuel -->
+  <text 
+    x="96" y="118" 
+    font-family="Arial, Helvetica, sans-serif" 
+    font-size="52" 
+    font-weight="700"
+    fill="white"
+    text-anchor="middle"
+    letter-spacing="-1">Shmuel</text>
+    
+  <!-- Small calendar icon above text -->
+  <rect x="72" y="44" width="48" height="40" rx="6" fill="none" stroke="white" stroke-width="2.5" opacity="0.9"/>
+  <rect x="72" y="44" width="48" height="14" rx="6" fill="white" opacity="0.25"/>
+  <rect x="82" y="37" width="7" height="14" rx="3.5" fill="white" opacity="0.9"/>
+  <rect x="103" y="37" width="7" height="14" rx="3.5" fill="white" opacity="0.9"/>
+  <!-- Grid dots -->
+  <circle cx="84" cy="67" r="3" fill="white" opacity="0.7"/>
+  <circle cx="96" cy="67" r="3" fill="white" opacity="0.7"/>
+  <circle cx="108" cy="67" r="3" fill="white" opacity="0.7"/>
+  <circle cx="84" cy="78" r="3" fill="white" opacity="0.9"/>
+  <circle cx="96" cy="78" r="3.5" fill="#60C8FF"/>
+  <circle cx="108" cy="78" r="3" fill="white" opacity="0.7"/>
+  
+  <!-- Thin line separator -->
+  <rect x="28" y="128" width="136" height="1.5" fill="white" opacity="0.2" rx="1"/>
+  
+  <!-- Subtitle: Smart Calendar -->
+  <text 
+    x="96" y="154" 
+    font-family="Arial, Helvetica, sans-serif" 
+    font-size="16" 
+    font-weight="400"
+    fill="white"
+    opacity="0.65"
+    text-anchor="middle"
+    letter-spacing="1">CALENDAR</text>
+</svg>

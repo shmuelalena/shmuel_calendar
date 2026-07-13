@@ -1,0 +1,62 @@
+{
+  "name": "Shmuel Calendar",
+  "short_name": "Shmuel",
+  "description": "Smart Calendar - Shmuel",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#1C52B4",
+  "theme_color": "#1C52B4",
+  "orientation": "portrait-primary",
+  "lang": "he",
+  "dir": "rtl",
+  "icons": [
+    {
+      "src": "icons/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "אירוע חדש",
+      "short_name": "הוסף",
+      "url": "/index.html?action=add",
+      "icons": [
+        {
+          "src": "icons/icon-192.svg",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Night Shift",
+      "short_name": "לילה",
+      "url": "/index.html?action=night",
+      "icons": [
+        {
+          "src": "icons/icon-192.svg",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
+}

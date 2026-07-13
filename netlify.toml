@@ -1,0 +1,15 @@
+[build]
+  functions = "netlify/functions"
+
+[context.production.environment]
+  # Set your production domain and API key before deploy.
+  CORS_ALLOW_ORIGIN = "https://YOUR-SITE.netlify.app"
+  GROQ_API_KEY = "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"
+
+[context.deploy-preview.environment]
+  CORS_ALLOW_ORIGIN = "*"
+
+[[redirects]]
+  from = "/api/claude"
+  to = "/.netlify/functions/claude"
+  status = 200

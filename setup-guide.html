@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>מדריך הגדרה - יומן שמואל</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Heebo',sans-serif;background:#f7f7f5;color:#1a1a18;font-size:15px;min-height:100vh}
+.container{max-width:600px;margin:0 auto;padding:24px 16px 60px}
+
+/* HEADER */
+.header{text-align:center;padding:24px 0 32px}
+.logo{font-size:48px;margin-bottom:12px}
+.title{font-size:24px;font-weight:700;margin-bottom:6px}
+.sub{font-size:14px;color:#6b6b67}
+
+/* PROGRESS */
+.progress-bar{display:flex;align-items:center;gap:0;margin-bottom:32px;padding:0 8px}
+.prog-step{flex:1;text-align:center;position:relative}
+.prog-dot{width:28px;height:28px;border-radius:50%;background:#e0e0e0;color:#999;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto 6px;transition:all 0.3s;position:relative;z-index:1}
+.prog-step.done .prog-dot{background:#1D9E75;color:white}
+.prog-step.active .prog-dot{background:#3B8BD4;color:white;box-shadow:0 0 0 4px rgba(59,139,212,0.2)}
+.prog-label{font-size:10px;color:#9e9e99;font-weight:500}
+.prog-step.done .prog-label,.prog-step.active .prog-label{color:#1a1a18}
+.prog-line{position:absolute;top:14px;left:calc(50% + 14px);right:calc(-50% + 14px);height:2px;background:#e0e0e0;z-index:0}
+.prog-step.done .prog-line{background:#1D9E75}
+
+/* STEP CARDS */
+.step-card{background:white;border-radius:20px;padding:24px;margin-bottom:16px;border:0.5px solid rgba(0,0,0,0.09);display:none}
+.step-card.active{display:block;animation:fadeIn 0.3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.step-icon{font-size:36px;margin-bottom:12px}
+.step-title{font-size:20px;font-weight:700;margin-bottom:8px}
+.step-desc{font-size:14px;color:#6b6b67;line-height:1.7;margin-bottom:20px}
+
+/* INSTRUCTIONS */
+.instruction{display:flex;gap:12px;padding:12px 14px;background:#f7f7f5;border-radius:12px;margin-bottom:8px;align-items:flex-start}
+.ins-num{width:24px;height:24px;border-radius:50%;background:#3B8BD4;color:white;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.ins-text{font-size:13px;color:#1a1a18;line-height:1.6}
+.ins-text strong{font-weight:600}
+.ins-text code{background:#e8e8e8;padding:1px 6px;border-radius:4px;font-family:monospace;font-size:12px}
+.ins-img{width:100%;border-radius:8px;border:1px solid #e5e5e5;margin-top:8px}
+
+/* LINK BTN */
+.link-btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;background:#e6f1fb;color:#185FA5;border-radius:10px;font-size:13px;font-weight:600;text-decoration:none;margin-bottom:14px;border:1px solid #b5d4f4}
+.link-btn:hover{background:#d0e8f8}
+
+/* INPUT AREA */
+.input-section{background:#f0f7ff;border-radius:14px;padding:16px;margin-top:16px;border:1px solid #b5d4f4}
+.input-label{font-size:13px;font-weight:600;color:#185FA5;margin-bottom:8px;display:block}
+.text-input{width:100%;padding:11px 13px;border:1.5px solid #b5d4f4;border-radius:10px;font-size:14px;color:#1a1a18;background:white;font-family:'Heebo',sans-serif;outline:none;direction:ltr;text-align:left}
+.text-input:focus{border-color:#3B8BD4}
+.input-hint{font-size:11px;color:#6b6b67;margin-top:6px}
+
+/* HIGHLIGHT BOX */
+.highlight{background:#fff8e1;border-right:3px solid #EF9F27;border-radius:0 10px 10px 0;padding:12px 14px;margin:12px 0;font-size:13px;color:#633806;line-height:1.6}
+.success-box{background:#e1f5ee;border-right:3px solid #1D9E75;border-radius:0 10px 10px 0;padding:12px 14px;margin:12px 0;font-size:13px;color:#085041;line-height:1.6}
+.warning-box{background:#faece7;border-right:3px solid #D85A30;border-radius:0 10px 10px 0;padding:12px 14px;margin:12px 0;font-size:13px;color:#712B13;line-height:1.6}
+
+/* SCREENSHOT MOCKUP */
+.mockup{background:#1e1e2e;border-radius:12px;padding:16px;margin:12px 0;font-family:monospace;font-size:12px;color:#cdd6f4;direction:ltr;text-align:left;overflow-x:auto}
+.mockup .key{color:#89b4fa}.mockup .val{color:#a6e3a1}.mockup .comment{color:#6c7086}
+
+/* TOGGLE SECTION */
+.toggle-row{display:flex;justify-content:center;gap:8px;margin-bottom:20px}
+.toggle-option{padding:8px 20px;border-radius:20px;border:1.5px solid #e0e0e0;cursor:pointer;font-size:13px;font-weight:500;color:#6b6b67;transition:all 0.15s}
+.toggle-option.sel{background:#3B8BD4;color:white;border-color:#3B8BD4}
+
+/* BUTTONS */
+.btn-next{width:100%;padding:15px;background:#3B8BD4;color:white;border:none;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;font-family:'Heebo',sans-serif;margin-top:16px;transition:opacity 0.15s}
+.btn-next:hover{opacity:0.9}
+.btn-next:active{opacity:0.8}
+.btn-back{width:100%;padding:12px;background:white;color:#6b6b67;border:1px solid #e0e0e0;border-radius:14px;font-size:15px;cursor:pointer;font-family:'Heebo',sans-serif;margin-top:8px}
+
+/* FINAL */
+.final-card{background:linear-gradient(135deg,#3B8BD4,#534AB7);border-radius:20px;padding:32px 24px;text-align:center;color:white;margin-bottom:16px}
+.final-icon{font-size:56px;margin-bottom:16px}
+.final-title{font-size:24px;font-weight:700;margin-bottom:8px}
+.final-sub{font-size:14px;opacity:0.85;line-height:1.6}
+.copy-btn{display:flex;align-items:center;gap:8px;padding:10px 16px;background:#f0f7ff;border-radius:10px;border:1px solid #b5d4f4;cursor:pointer;font-size:13px;font-weight:600;color:#185FA5;width:100%;justify-content:center;margin-top:10px;font-family:'Heebo',sans-serif}
+.copy-btn:active{background:#deedf9}
+
+/* CONFIG OUTPUT */
+.config-box{background:#1e1e2e;border-radius:14px;padding:18px;margin:12px 0;direction:ltr;text-align:left;overflow-x:auto}
+.config-box pre{font-family:monospace;font-size:12px;color:#cdd6f4;white-space:pre-wrap}
+.config-box .k{color:#89b4fa}
+.config-box .v{color:#a6e3a1}
+.config-box .s{color:#f38ba8}
+
+/* SCE SECTION */
+.sce-card{background:white;border-radius:16px;padding:20px;border:1px solid rgba(0,0,0,0.09);margin-bottom:10px}
+.sce-title{font-size:16px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.sce-badge{font-size:11px;padding:2px 8px;border-radius:8px;background:#e1f5ee;color:#085041;font-weight:600}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="logo">🗓️</div>
+    <div class="title">מדריך הגדרה</div>
+    <div class="sub">יומן חכם שמואל · Google Calendar + SCE</div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-bar">
+    <div class="prog-step active" id="prog-0">
+      <div class="prog-dot">1</div>
+      <div class="prog-label">Google<br>Console</div>
+      <div class="prog-line"></div>
+    </div>
+    <div class="prog-step" id="prog-1">
+      <div class="prog-dot">2</div>
+      <div class="prog-label">OAuth<br>Client</div>
+      <div class="prog-line"></div>
+    </div>
+    <div class="prog-step" id="prog-2">
+      <div class="prog-dot">3</div>
+      <div class="prog-label">פריסה<br>Netlify</div>
+      <div class="prog-line"></div>
+    </div>
+    <div class="prog-step" id="prog-3">
+      <div class="prog-dot">4</div>
+      <div class="prog-label">SCE<br>סנכרון</div>
+    </div>
+  </div>
+
+  <!-- ══ STEP 0: Google Console ══ -->
+  <div class="step-card active" id="step-0">
+    <div class="step-icon">☁️</div>
+    <div class="step-title">Google Cloud Console</div>
+    <div class="step-desc">כבר יש לך פרויקט — צריך רק להפעיל Calendar API ולצור Client ID.</div>
+
+    <a class="link-btn" href="https://console.cloud.google.com" target="_blank">↗ פתח Google Cloud Console</a>
+
+    <div class="instruction">
+      <div class="ins-num">1</div>
+      <div class="ins-text">בחר את הפרויקט שלך מהתפריט הנפתח בראש הדף</div>
+    </div>
+    <div class="instruction">
+      <div class="ins-num">2</div>
+      <div class="ins-text">בתפריט הצדדי: <strong>APIs &amp; Services</strong> ← <strong>Library</strong></div>
+    </div>
+    <div class="instruction">
+      <div class="ins-num">3</div>
+      <div class="ins-text">חפש <code>Google Calendar API</code> ← לחץ עליה ← לחץ <strong>Enable</strong></div>
+    </div>
+    <div class="instruction">
+      <div class="ins-num">4</div>
+      <div class="ins-text">אם כבר מופעלת (כתוב "Manage") — אין צורך לעשות כלום, המשך הלאה ✓</div>
+    </div>
+
+    <div class="highlight">💡 אם זה הפרויקט הראשון שלך ב-Google Cloud, תצטרך גם להגדיר <strong>OAuth Consent Screen</strong> — נעבור על זה בשלב הבא.</div>
+
+    <button class="btn-next" onclick="nextStep()">Google Calendar API מופעל ✓ — המשך</button>
+  </div>
+
+  <!-- ══ STEP 1: OAuth Client ══ -->
+  <div class="step-card" id="step-1">
+    <div class="step-icon">🔑</div>
+    <div class="step-title">יצירת OAuth Client ID</div>
+    <div class="step-desc">זה המפתח שמאפשר לאפליקציה שלך להתחבר ל-Google בשמך.</div>
+
+    <div class="instruction">
+      <div class="ins-num">1</div>
+      <div class="ins-text">לך ל: <strong>APIs &amp; Services → Credentials</strong></div>
+    </div>
+    <div class="instruction">
+      <div class="ins-num">2</div>
+      <div class="ins-text">לחץ <strong>+ Create Credentials → OAuth Client ID</strong></div>
+    </div>
+    <div class="instruction">
+      <div class="ins-num">3</div>
+      <div class="ins-text">Application type: בחר <strong>Web Application</strong></div>
+    </div>
+    <div class="instruction">
+      <div class="ins-num">4</div>
+      <div class="ins-text">Name: <code>Shmuel Calendar</code></div>
+    </div>
+    <div class="instruction">
+      <div class="ins-num">5</div>
+      <div class="ins-text">
+        <strong>Authorized JavaScript origins</strong> — לחץ Add URI והכנס את ה-URL של האפליקציה שלך.<br>
+        <span style="color:#9e9e99;font-size:12px">למשל: https://shmuel-calendar.netlify.app</span><br>
+        <span style="color:#9e9e99;font-size:12px">אם עדיין אין לך URL — הכנס <code>http://localhost</code> ועדכן אחרי הפריסה.</span>
+      </div>
+    </div>
+    <div class="instruction">
+      <div class="ins-num">6</div>
+      <div class="ins-text">לחץ <strong>Create</strong> — יופיע חלון עם <strong>Client ID</strong></div>
+    </div>
+
+    <div class="input-section">
+      <label class="input-label">📋 הכנס כאן את ה-Client ID שקיבלת:</label>
+      <input class="text-input" id="client-id-input" placeholder="XXXXXXXXXXXXXXXX.apps.googleusercontent.com" oninput="onClientIdInput(this.value)">
+      <div class="input-hint">נראה כך: 123456789-abcdefg.apps.googleusercontent.com</div>
+    </div>
+
+    <div class="warning-box" id="oauth-warning" style="display:none">
+      ⚠️ <strong>OAuth Consent Screen</strong> — אם מבקש להגדיר, לחץ "Configure Consent Screen" → External → מלא שם האפליקציה → הוסף את האימייל שלך כ-Test User → Save.
+    </div>
+
+    <button class="btn-next" id="btn-step1" onclick="nextStep()" disabled>המשך →</button>
+    <button class="btn-back" onclick="prevStep()">← חזור</button>
+  </div>
+
+  <!-- ══ STEP 2: DEPLOY ══ -->
+  <div class="step-card" id="step-2">
+    <div class="step-icon">🚀</div>
+    <div class="step-title">פריסת האפליקציה</div>
+    <div class="step-desc">כדי ש-Google Calendar יעבוד, האפליקציה חייבת לרוץ על HTTPS. Netlify מספק את זה חינם תוך דקה.</div>
+
+    <div class="toggle-row">
+      <div class="toggle-option sel" onclick="setDeploy('netlify',this)">Netlify (מומלץ)</div>
+      <div class="toggle-option" onclick="setDeploy('github',this)">GitHub Pages</div>
+      <div class="toggle-option" onclick="setDeploy('already',this)">כבר פרסתי</div>
+    </div>
+
+    <div id="deploy-netlify">
+      <div class="instruction">
+        <div class="ins-num">1</div>
+        <div class="ins-text">כנס ל-<a href="https://netlify.com" target="_blank" style="color:#3B8BD4">netlify.com</a> וצור חשבון חינמי (אם אין)</div>
+      </div>
+      <div class="instruction">
+        <div class="ins-num">2</div>
+        <div class="ins-text">בדף הראשי לחץ <strong>"Add new site → Deploy manually"</strong></div>
+      </div>
+      <div class="instruction">
+        <div class="ins-num">3</div>
+        <div class="ins-text">גרור את תיקיית <code>shmuel-calendar</code> מה-ZIP שהורדת ← שחרר</div>
+      </div>
+      <div class="instruction">
+        <div class="ins-num">4</div>
+        <div class="ins-text">תוך 30 שניות תקבל URL! העתק אותו למטה.</div>
+      </div>
+    </div>
+
+    <div id="deploy-github" style="display:none">
+      <div class="instruction">
+        <div class="ins-num">1</div>
+        <div class="ins-text">כנס ל-<a href="https://github.com" target="_blank" style="color:#3B8BD4">github.com</a> → New Repository → שם: <code>shmuel-calendar</code> → Public</div>
+      </div>
+      <div class="instruction">
+        <div class="ins-num">2</div>
+        <div class="ins-text">העלה את כל הקבצים מה-ZIP → Commit changes</div>
+      </div>
+      <div class="instruction">
+        <div class="ins-num">3</div>
+        <div class="ins-text">Settings → Pages → Source: <strong>Deploy from branch → main</strong> → Save</div>
+      </div>
+      <div class="instruction">
+        <div class="ins-num">4</div>
+        <div class="ins-text">ה-URL יהיה: <code>https://USERNAME.github.io/shmuel-calendar</code></div>
+      </div>
+    </div>
+
+    <div id="deploy-already" style="display:none">
+      <div class="success-box">✓ מעולה! רק הכנס את ה-URL שלך למטה.</div>
+    </div>
+
+    <div class="input-section">
+      <label class="input-label">🌐 הכנס את ה-URL של האפליקציה:</label>
+      <input class="text-input" id="url-input" placeholder="https://shmuel-calendar.netlify.app" oninput="onUrlInput(this.value)">
+      <div class="input-hint">חשוב: חייב להתחיל ב-https://</div>
+    </div>
+
+    <div class="highlight" id="url-reminder" style="display:none">
+      📌 <strong>חשוב:</strong> חזור ל-Google Console ועדכן את ה-URL הזה ב-<strong>Authorized JavaScript origins</strong> של ה-OAuth Client ID שיצרת.
+    </div>
+
+    <button class="btn-next" id="btn-step2" onclick="nextStep()" disabled>המשך →</button>
+    <button class="btn-back" onclick="prevStep()">← חזור</button>
+  </div>
+
+  <!-- ══ STEP 3: SCE + FINAL ══ -->
+  <div class="step-card" id="step-3">
+    <div class="step-icon">🎓</div>
+    <div class="step-title">סנכרון מכללת SCE</div>
+    <div class="step-desc">מערכת השעות של SCE אפשר לסנכרן דרך Google Calendar — זה הכי נוח!</div>
+
+    <div class="sce-card">
+      <div class="sce-title">📅 שיטה 1: ייצוא iCal (מומלץ) <span class="sce-badge">קל ביותר</span></div>
+      <div class="instruction" style="margin-bottom:6px">
+        <div class="ins-num">1</div>
+        <div class="ins-text">כנס ל-<strong>פורטל הסטודנטים של SCE</strong> (my.sce.ac.il)</div>
+      </div>
+      <div class="instruction" style="margin-bottom:6px">
+        <div class="ins-num">2</div>
+        <div class="ins-text">מצא את <strong>לוח השנה / מערכת שעות</strong> → ייצוא → <strong>iCal / .ics</strong></div>
+      </div>
+      <div class="instruction" style="margin-bottom:6px">
+        <div class="ins-num">3</div>
+        <div class="ins-text">ב-Google Calendar: <strong>Other Calendars → Import</strong> → העלה את קובץ ה-.ics</div>
+      </div>
+      <div class="instruction">
+        <div class="ins-num">4</div>
+        <div class="ins-text">✅ כל השיעורים יופיעו ביומן שלך — ובאפליקציה אוטומטית!</div>
+      </div>
+    </div>
+
+    <div class="sce-card">
+      <div class="sce-title">🔗 שיטה 2: Subscribe URL</div>
+      <div class="instruction" style="margin-bottom:6px">
+        <div class="ins-num">1</div>
+        <div class="ins-text">אם SCE מספקת <strong>Calendar URL</strong> — העתק אותו</div>
+      </div>
+      <div class="instruction">
+        <div class="ins-num">2</div>
+        <div class="ins-text">Google Calendar: <strong>Other Calendars → From URL</strong> → הדבק → Add Calendar<br>
+        <span style="color:#9e9e99;font-size:12px">מתעדכן אוטומטית כל שינוי במערכת השעות!</span></div>
+      </div>
+    </div>
+
+    <div class="highlight">💡 אחרי הייבוא — כל השיעורים יסונכרנו אוטומטית ליומן החכם דרך ה-Google Calendar API שהגדרנו.</div>
+
+    <!-- FINAL CONFIG -->
+    <div style="margin-top:20px;padding-top:20px;border-top:1px solid #e5e5e5">
+      <div style="font-size:16px;font-weight:700;margin-bottom:12px">✅ הקובץ המוכן שלך</div>
+      <div style="font-size:13px;color:#6b6b67;margin-bottom:10px">הדבק את הפרטים האלה בתוך האפליקציה (בהגדרות Google Calendar):</div>
+
+      <div class="config-box">
+        <pre id="config-output">// פרטי ההגדרה שלך:
+Client ID: <span class="s" id="conf-cid">[ הכנס בשלב 2 ]</span>
+App URL:   <span class="v" id="conf-url">[ הכנס בשלב 3 ]</span>
+
+// הדבק את ה-Client ID בתוך האפליקציה
+// בלשונית 🗓️ Google → שדה Client ID</pre>
+      </div>
+
+      <button class="copy-btn" onclick="copyConfig()">📋 העתק פרטים</button>
+    </div>
+
+    <div class="final-card" style="margin-top:20px">
+      <div class="final-icon">🎉</div>
+      <div class="final-title">הכל מוכן!</div>
+      <div class="final-sub">עכשיו פתח את האפליקציה, לך ל-🗓️ Google Calendar, הכנס את ה-Client ID — וזהו!</div>
+    </div>
+
+    <button class="btn-back" onclick="prevStep()">← חזור</button>
+  </div>
+
+</div>
+
+<script>
+let step=0, clientId='', appUrl='', deployMode='netlify';
+
+function nextStep(){
+  document.getElementById('step-'+step).classList.remove('active');
+  document.getElementById('prog-'+step).classList.remove('active');
+  document.getElementById('prog-'+step).classList.add('done');
+  step++;
+  document.getElementById('step-'+step).classList.add('active');
+  document.getElementById('prog-'+step).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function prevStep(){
+  document.getElementById('step-'+step).classList.remove('active');
+  document.getElementById('prog-'+step).classList.remove('active');
+  step--;
+  document.getElementById('step-'+step).classList.add('active');
+  document.getElementById('prog-'+step).classList.remove('done');
+  document.getElementById('prog-'+step).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function onClientIdInput(v){
+  clientId=v.trim();
+  const valid=clientId.includes('apps.googleusercontent.com');
+  document.getElementById('btn-step1').disabled=!valid;
+  document.getElementById('oauth-warning').style.display=v.length>5?'block':'none';
+  if(valid)document.getElementById('conf-cid').textContent=clientId;
+}
+
+function onUrlInput(v){
+  appUrl=v.trim();
+  const valid=appUrl.startsWith('https://');
+  document.getElementById('btn-step2').disabled=!valid;
+  document.getElementById('url-reminder').style.display=valid?'block':'none';
+  if(valid)document.getElementById('conf-url').textContent=appUrl;
+}
+
+function setDeploy(mode,el){
+  deployMode=mode;
+  document.querySelectorAll('.toggle-option').forEach(e=>e.classList.remove('sel'));
+  el.classList.add('sel');
+  document.getElementById('deploy-netlify').style.display=mode==='netlify'?'block':'none';
+  document.getElementById('deploy-github').style.display=mode==='github'?'block':'none';
+  document.getElementById('deploy-already').style.display=mode==='already'?'block':'none';
+}
+
+function copyConfig(){
+  const txt=`Client ID: ${clientId||'לא הוכנס'}\nApp URL: ${appUrl||'לא הוכנס'}`;
+  navigator.clipboard.writeText(txt).then(()=>{
+    const b=document.querySelector('.copy-btn');
+    b.textContent='✓ הועתק!';setTimeout(()=>b.textContent='📋 העתק פרטים',2000);
+  });
+}
+</script>
+</body>
+</html>
