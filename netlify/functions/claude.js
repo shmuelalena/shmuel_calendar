@@ -1,4 +1,4 @@
-// Proxy for both Groq and Anthropic APIs
+// Proxy for Groq, Anthropic, and xAI Grok APIs
 exports.handler = async (event) => {
   const corsOrigin = process.env.CORS_ALLOW_ORIGIN || '*';
 
@@ -33,7 +33,7 @@ exports.handler = async (event) => {
     const body = JSON.parse(event.body);
     const headersIn = event.headers || {};
     const provider = (headersIn['x-provider'] || headersIn['X-Provider'] || 'groq').toLowerCase();
-    if (provider !== 'groq' && provider !== 'anthropic') {
+    if (provider !== 'groq' && provider !== 'anthropic' && provider !== 'grok') {
       return {
         statusCode: 400,
         headers: {
@@ -47,7 +47,14 @@ exports.handler = async (event) => {
     let url, headers;
     let apiKey;
 
-    if (provider === 'groq') {
+    if (provider === 'grok') {
+      url = 'https://api.x.ai/v1/chat/completions';
+      apiKey = process.env.GROK_API_KEY || headersIn['x-api-key'] || headersIn['X-API-Key'];
+      headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`,
+      };
+    } else if (provider === 'groq') {
       url = 'https://api.groq.com/openai/v1/chat/completions';
       apiKey = process.env.GROQ_API_KEY || headersIn['x-api-key'] || headersIn['X-API-Key'];
       headers = {

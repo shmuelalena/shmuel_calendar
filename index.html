@@ -249,13 +249,34 @@ a.lnk{color:var(--blue);font-size:13px;text-decoration:none}
 .cloud-updated{font-size:11px;color:var(--text3);margin-top:2px}
 
 /* TASKS */
-.task-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--bg2);border:0.5px solid var(--border);border-radius:14px;box-shadow:var(--shadow-soft)}
-.task-cb{width:22px;height:22px;border:2px solid var(--border2);border-radius:6px;appearance:none;outline:none;cursor:pointer;position:relative;flex-shrink:0;background:var(--surface-glass);transition:all 0.2s}
+.task-view-row{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.task-view-btn{padding:7px 10px;border-radius:999px;border:0.5px solid var(--border2);background:var(--surface-glass);color:var(--text2);font-size:12px;cursor:pointer;font-family:'Heebo',sans-serif}
+.task-view-btn.active{background:var(--blue-bg);color:var(--blue-txt);border-color:var(--blue)}
+.task-item{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;background:var(--bg2);border:0.5px solid var(--border);border-radius:14px;box-shadow:var(--shadow-soft);margin-bottom:8px}
+.task-item.child{margin-right:16px}
+.task-item.heat-high{border-color:var(--coral);background:linear-gradient(135deg,var(--coral-bg),var(--bg2))}
+.task-item.heat-mid{border-color:var(--amber);background:linear-gradient(135deg,var(--amber-bg),var(--bg2))}
+.task-item.done{opacity:0.72}
+.task-cb{width:22px;height:22px;border:2px solid var(--border2);border-radius:6px;appearance:none;outline:none;cursor:pointer;position:relative;flex-shrink:0;background:var(--surface-glass);transition:all 0.2s;margin-top:2px}
 .task-cb:checked{background:var(--blue);border-color:var(--blue)}
 .task-cb:checked::after{content:'';position:absolute;left:6px;top:2px;width:5px;height:10px;border:solid white;border-width:0 2px 2px 0;transform:rotate(45deg)}
-.task-txt{flex:1;font-size:15px;color:var(--text);transition:color 0.2s}
-.task-cb:checked ~ .task-txt{text-decoration:line-through;color:var(--text3)}
-.task-del{background:none;border:none;color:var(--text3);font-size:18px;cursor:pointer;padding:4px}
+.task-main{flex:1;min-width:0}
+.task-txt{font-size:15px;color:var(--text);transition:color 0.2s;word-break:break-word}
+.task-item.done .task-txt{text-decoration:line-through;color:var(--text3)}
+.task-meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.task-badge{font-size:11px;padding:3px 8px;border-radius:999px;background:var(--surface-glass);color:var(--text2);border:0.5px solid var(--border2)}
+.task-badge.priority-high{background:var(--coral-bg);color:var(--coral-txt);border-color:var(--coral)}
+.task-badge.priority-mid{background:var(--amber-bg);color:var(--amber-txt);border-color:var(--amber)}
+.task-badge.priority-low{background:var(--green-bg);color:var(--green-txt);border-color:var(--green)}
+.task-badge.heat{background:var(--blue-bg);color:var(--blue-txt);border-color:var(--blue)}
+.task-actions{display:flex;align-items:center;gap:6px;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end}
+.task-progress{font-size:11px;color:var(--text3);white-space:nowrap}
+.task-del{background:none;border:none;color:var(--text3);font-size:18px;cursor:pointer;padding:4px;border-radius:8px}
+.task-del:active{background:var(--bg3)}
+.task-stats-card{background:var(--surface-glass);border:0.5px solid var(--border);border-radius:12px;padding:10px;box-shadow:var(--shadow-soft);display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+.task-stats-row{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px}
+.task-stats-label{color:var(--text2)}
+.task-stats-value{font-weight:600;color:var(--text)}
 
 .topbar,.today-banner,.month-nav,.cal-wrap,.bottom-nav{animation:uiIn .42s ease both}
 .today-banner{animation-delay:.04s}.month-nav{animation-delay:.08s}.cal-wrap{animation-delay:.12s}.bottom-nav{animation-delay:.16s}
@@ -429,11 +450,21 @@ a.lnk{color:var(--blue);font-size:13px;text-decoration:none}
   <div class="handle"></div>
   <div class="ptitle">✅ רשימת מטלות <button class="xbtn" onclick="closeP('tasks')">✕</button></div>
   <div class="pbody">
-    <div style="display:flex;gap:8px;margin-bottom:16px">
-      <input class="fi" id="new-task-inp" placeholder="מטלה חדשה..." onkeydown="if(event.key==='Enter')addTask(this.value)">
-      <button class="btn" style="width:auto;padding:0 20px" onclick="addTask(document.getElementById('new-task-inp').value)">＋</button>
+    <div class="task-view-row">
+      <button class="task-view-btn active" id="tasks-focus-btn" onclick="setTaskView('focus')">🎯 תפוס היום</button>
+      <button class="task-view-btn" id="tasks-all-btn" onclick="setTaskView('all')">📋 כל המטלות</button>
     </div>
-    <div id="tasks-list" style="display:flex;flex-direction:column;gap:10px"></div>
+    <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+      <input class="fi" id="new-task-inp" placeholder="מטלה חדשה..." onkeydown="if(event.key==='Enter')addTaskFromInputs()">
+      <input class="fi" id="new-task-due" type="date" style="max-width:140px">
+      <select class="fi" id="new-task-priority" style="max-width:110px">
+        <option value="high">גבוהה</option>
+        <option value="medium" selected>בינונית</option>
+        <option value="low">נמוכה</option>
+      </select>
+      <button class="btn" style="width:auto;padding:0 20px" onclick="addTaskFromInputs()">＋</button>
+    </div>
+    <div id="tasks-list" style="display:flex;flex-direction:column"></div>
   </div>
 </div>
 
@@ -561,7 +592,7 @@ a.lnk{color:var(--blue);font-size:13px;text-decoration:none}
     <div style="padding:10px 0;border-bottom:0.5px solid var(--border)">
       <div class="ssub" style="margin-bottom:8px">אם מוגדר <b>GROQ_API_KEY</b> ב-Netlify אין צורך במפתח כאן. אפשר להשאיר ריק, או להגדיר מפתח מקומי כגיבוי.</div>
       <div style="position:relative">
-        <input class="fi" id="gem-key" placeholder="gsk_..." dir="ltr" style="font-size:12px;font-family:monospace;margin-bottom:7px;padding-left:60px">
+        <input class="fi" id="gem-key" placeholder="Grok API Key / xai-..." dir="ltr" style="font-size:12px;font-family:monospace;margin-bottom:7px;padding-left:60px">
         <button onclick="toggleKeyVisible('gem-key')" style="position:absolute;left:10px;top:10px;background:none;border:none;cursor:pointer;font-size:12px;color:var(--text2)">👁</button>
       </div>
       <div style="display:flex;gap:7px">
@@ -665,6 +696,11 @@ a.lnk{color:var(--blue);font-size:13px;text-decoration:none}
     </div>
     <div class="sec-title" style="margin-top:6px">התפלגות עומס יומית</div>
     <div class="stats-bars" id="stats-bars"></div>
+    <div class="sec-title" style="margin-top:12px">📌 מטלות</div>
+    <div class="task-stats-card">
+      <div class="task-stats-row"><span class="task-stats-label">שיעור השלמה</span><span class="task-stats-value" id="task-completion-rate">0%</span></div>
+      <div class="task-stats-row"><span class="task-stats-label">הכי נדחים</span><span class="task-stats-value" id="task-most-deferred">—</span></div>
+    </div>
     <div class="sec-title" style="margin-top:20px;display:flex;justify-content:space-between">
       <span>💰 מעקב הכנסה (חודש נוכחי)</span>
       <span style="font-size:12px;color:var(--blue);cursor:pointer;text-transform:none" onclick="openP('settings')">הגדר שכר ⏵</span>
@@ -747,8 +783,175 @@ let evs=JSON.parse(localStorage.getItem('s_evs')||'null')||[
 let nid=Math.max(...evs.map(e=>e.id),9)+1;
 
 // Tasks
-let tasks=JSON.parse(localStorage.getItem('s_tasks')||'[]');
+let tasks=[];
+let taskView='focus';
+
+function normalizeTask(task){
+  const text=typeof task?.text==='string'?task.text:'';
+  const priority=['low','medium','high'].includes(task?.priority)?task.priority:'medium';
+  return {
+    id: task?.id ?? Date.now()+Math.floor(Math.random()*1000),
+    text,
+    done: !!task?.done,
+    dueDate: task?.dueDate || '',
+    priority,
+    deferCount: Number(task?.deferCount)||0,
+    parentId: task?.parentId || null,
+    lastDeferredOn: task?.lastDeferredOn || '',
+    createdAt: task?.createdAt || new Date().toISOString()
+  };
+}
+function loadTasksFromStorage(){
+  try{
+    const raw=JSON.parse(localStorage.getItem('s_tasks')||'[]');
+    if(!Array.isArray(raw)) return [];
+    const normalized=raw.map(normalizeTask).filter(t=>t && t.text);
+    const needsSave=raw.some((task,idx)=>JSON.stringify(normalizeTask(task))!==JSON.stringify(raw[idx]));
+    tasks=normalized;
+    if(needsSave) saveTasks();
+    return tasks;
+  }catch{return []};
+}
 function saveTasks() { localStorage.setItem('s_tasks', JSON.stringify(tasks)); }
+loadTasksFromStorage();
+
+function getTaskPriorityLabel(task){
+  if(task.priority==='high')return 'גבוהה';
+  if(task.priority==='low')return 'נמוכה';
+  return 'בינונית';
+}
+function getTaskPriorityClass(task){
+  if(task.priority==='high')return 'priority-high';
+  if(task.priority==='low')return 'priority-low';
+  return 'priority-mid';
+}
+function getTaskHeatClass(task){
+  if(task.done||!task.dueDate)return '';
+  const today=todayStr();
+  if(task.dueDate<today){return (task.deferCount||0)>=2?'heat-high':'heat-mid';}
+  if(task.dueDate===today)return 'heat-mid';
+  return '';
+}
+function getTaskChildren(taskId){return tasks.filter(t=>t.parentId===taskId).sort(compareTasks);}
+function isTaskFocusCandidate(task){
+  if(task.done||task.parentId)return false;
+  const today=todayStr();
+  return (!!task.dueDate && (task.dueDate===today || task.dueDate<today)) || (task.deferCount||0)>=2;
+}
+function compareTasks(a,b){
+  const aScore=(a.done?0:100)+(a.priority==='high'?25:a.priority==='low'?5:15)+((a.deferCount||0)*8)+(a.dueDate===todayStr()?30:0)+(a.dueDate&&a.dueDate<todayStr()?45:0);
+  const bScore=(b.done?0:100)+(b.priority==='high'?25:b.priority==='low'?5:15)+((b.deferCount||0)*8)+(b.dueDate===todayStr()?30:0)+(b.dueDate&&b.dueDate<todayStr()?45:0);
+  if(aScore!==bScore)return bScore-aScore;
+  if(a.dueDate!==b.dueDate)return (a.dueDate||'9999-99-99').localeCompare(b.dueDate||'9999-99-99');
+  return b.id-a.id;
+}
+function applyTaskDeferrals(){
+  const today=todayStr();
+  let changed=false;
+  tasks.forEach(task=>{
+    if(task.done||!task.dueDate||task.dueDate>=today)return;
+    if(task.lastDeferredOn!==today){
+      task.deferCount=Math.max((Number(task.deferCount)||0)+1,1);
+      task.lastDeferredOn=today;
+      changed=true;
+    }
+  });
+  if(changed)saveTasks();
+}
+function setTaskView(view){
+  taskView=view;
+  document.getElementById('tasks-focus-btn')?.classList.toggle('active', view==='focus');
+  document.getElementById('tasks-all-btn')?.classList.toggle('active', view==='all');
+  renderTasks();
+}
+function addTaskFromInputs(){
+  const inp=document.getElementById('new-task-inp');
+  const due=document.getElementById('new-task-due');
+  const pr=document.getElementById('new-task-priority');
+  addTask(inp?.value||'', {dueDate:due?.value||'', priority:pr?.value||'medium'});
+}
+function getVisibleTaskRoots(){
+  applyTaskDeferrals();
+  const roots=tasks.filter(t=>!t.parentId).sort(compareTasks);
+  const pending=roots.filter(t=>!t.done);
+  const done=roots.filter(t=>t.done);
+  if(taskView==='focus'){
+    const focused=pending.filter(isTaskFocusCandidate).slice(0,5);
+    if(focused.length<5){
+      const extras=pending.filter(t=>!focused.some(x=>x.id===t.id)).slice(0,5-focused.length);
+      return [...focused,...extras];
+    }
+    return focused;
+  }
+  return [...pending,...done];
+}
+function renderTasks(){
+  const c=document.getElementById('tasks-list');
+  if(!c)return;
+  applyTaskDeferrals();
+  document.getElementById('tasks-focus-btn')?.classList.toggle('active', taskView==='focus');
+  document.getElementById('tasks-all-btn')?.classList.toggle('active', taskView==='all');
+  c.innerHTML='';
+  const roots=getVisibleTaskRoots();
+  if(!roots.length){
+    c.innerHTML='<div style="text-align:center;color:var(--text3);padding:20px;font-size:14px">'+(taskView==='focus'?'אין מטלות דחופות כרגע ✨':'אין מטלות ברשימה 🎉')+'</div>';
+    return;
+  }
+  roots.forEach(root=>renderTaskRow(root,c,0));
+}
+function renderTaskRow(task, host, depth){
+  const heatClass=getTaskHeatClass(task);
+  const item=document.createElement('div');
+  item.className=['task-item', task.done?'done':'', heatClass].filter(Boolean).join(' ');
+  item.style.marginRight=depth?`${depth*16}px`:'';
+  const children=getTaskChildren(task.id);
+  const progress=children.length?`<span class="task-progress">📌 ${children.filter(x=>x.done).length}/${children.length}</span>`:'';
+  const dueLabel=task.dueDate?`<span class="task-badge ${task.dueDate===todayStr()?'heat':''} ${task.priority?getTaskPriorityClass(task):''}">${task.dueDate===todayStr()?'📅 היום':task.dueDate<todayStr()?'⏰ עבר':'📅 '+task.dueDate}</span>`:'';
+  const priorityLabel=task.priority?`<span class="task-badge ${getTaskPriorityClass(task)}">${getTaskPriorityLabel(task)}</span>`:'';
+  const deferLabel=(task.deferCount||0)>0?`<span class="task-badge heat">🔁 ${task.deferCount}</span>`:'';
+  const subtaskBtn=!task.parentId?`<button class="mini-btn" onclick="promptAddSubtask(${task.id})">＋ תת-משימה</button>`:'';
+  item.innerHTML=`<input type="checkbox" class="task-cb" ${task.done?'checked':''} onchange="toggleTask(${task.id})">
+    <div class="task-main">
+      <div class="task-txt">${escapeHtml(task.text)}</div>
+      <div class="task-meta">${dueLabel}${priorityLabel}${deferLabel}${progress}</div>
+    </div>
+    <div class="task-actions">
+      ${subtaskBtn}
+      <button class="task-del" onclick="deleteTask(${task.id})">✕</button>
+    </div>`;
+  host.appendChild(item);
+  children.forEach(child=>renderTaskRow(child,host,depth+1));
+}
+function addTask(text, opts={}){
+  text=(text||'').trim();
+  if(!text)return;
+  const dueDate=opts.dueDate||document.getElementById('new-task-due')?.value||'';
+  const priority=opts.priority||document.getElementById('new-task-priority')?.value||'medium';
+  tasks.unshift({id:Date.now(), text, done:false, dueDate, priority, deferCount:0, parentId:opts.parentId||null, lastDeferredOn:'', createdAt:new Date().toISOString()});
+  saveTasks();
+  renderTasks();
+  if(!opts.parentId){
+    const inp=document.getElementById('new-task-inp'); if(inp)inp.value='';
+    const due=document.getElementById('new-task-due'); if(due)due.value='';
+    const pr=document.getElementById('new-task-priority'); if(pr)pr.value='medium';
+  }
+  showToast(opts.parentId?'✓ נוספה תת-משימה':'✓ נוספה מטלה');
+}
+function toggleTask(id){
+  const t=tasks.find(x=>x.id===id); if(!t)return;
+  t.done=!t.done;
+  tasks.filter(x=>x.parentId===id).forEach(child=>{child.done=t.done;});
+  saveTasks();renderTasks();
+}
+function deleteTask(id){
+  tasks=tasks.filter(x=>x.id!==id&&x.parentId!==id);
+  saveTasks();renderTasks();
+}
+function promptAddSubtask(parentId){
+  const parent=tasks.find(t=>t.id===parentId); if(!parent)return;
+  const text=prompt('הוסף תת-משימה ל“'+parent.text+'”', '');
+  if(text&&text.trim()) addTask(text.trim(), {parentId, dueDate:parent.dueDate||'', priority:parent.priority||'medium'});
+}
 
 // Notes
 let notes=JSON.parse(localStorage.getItem('s_notes')||'{"tabs":["כללי"],"active":0,"content":{"כללי":""}}');
@@ -1525,7 +1728,7 @@ function clearGemKey(){
   document.getElementById('gem-status').style.color='var(--text3)';
   document.getElementById('ai-badge').textContent='AI';
   document.getElementById('ai-badge').className='badge off';
-  showToast('Groq Key נמחק');
+  showToast('Grok API Key נמחק');
 }
 
 function clearCID(){
@@ -1542,7 +1745,7 @@ function saveGemKey(){
   document.getElementById('gem-status').textContent='✓ נשמר';
   document.getElementById('ai-badge').textContent='AI ✓';
   document.getElementById('ai-badge').className='badge on';
-  document.getElementById('gem-key').type='password';showToast('✓ Groq Key נשמר!');
+  document.getElementById('gem-key').type='password';showToast('✓ Grok API Key נשמר!');
 }
 
 // ══ AI CHAT ══
@@ -1551,6 +1754,15 @@ const aiHistory=[];// Keep conversation history for context
 function quickAI(t){
   const inp=document.getElementById('ai-inp');inp.value=t;
   openP('ai');setTimeout(sendAI,100);
+}
+function aiProvider(){
+  return gemKey() ? 'grok' : 'groq';
+}
+function aiTextModel(){
+  return aiProvider()==='grok' ? 'grok-2-1212' : 'llama-3.3-70b-versatile';
+}
+function aiVisionModel(){
+  return aiProvider()==='grok' ? 'grok-2-vision-1212' : 'llama-3.2-90b-vision-preview';
 }
 function toggleNotifications(btn){
   if(!btn.classList.contains('on')){
@@ -1578,8 +1790,31 @@ function checkUpcomingEvents(){
     }
   });
 }
+function checkUpcomingTasks(){
+  if(!cfg.notifications||Notification.permission!=='granted')return;
+  const today=todayStr();
+  const todaysTasks=tasks.filter(t=>!t.done&&t.dueDate===today);
+  const overdueTasks=tasks.filter(t=>!t.done&&t.dueDate&&t.dueDate<today);
+  const calendarContext=visibleEvents().filter(e=>e.date===today).length;
+  todaysTasks.forEach(task=>{
+    const key='n_task_'+task.id+'_'+today;
+    if(!localStorage.getItem(key)){
+      const body=(calendarContext?`יש ${calendarContext} אירועים היום • `:'')+task.text;
+      new Notification('מטלה היום',{body,icon:'/icons/icon-192.png'});
+      localStorage.setItem(key,'1');
+    }
+  });
+  overdueTasks.forEach(task=>{
+    const key='n_overdue_'+task.id+'_'+today;
+    if((task.deferCount||0)>=1&&!localStorage.getItem(key)){
+      new Notification('מטלה באיחור',{body:task.text,icon:'/icons/icon-192.png'});
+      localStorage.setItem(key,'1');
+    }
+  });
+}
 // Run every minute
 setInterval(checkUpcomingEvents, 60*1000);
+setInterval(checkUpcomingTasks, 60*1000);
 
 function updateVoiceChatUi(){
   const status=document.getElementById('ai-voice-status');
@@ -1763,11 +1998,11 @@ ${habits.map(h=>'• '+h.name).join('\n')||'(אין)'}
     }else{
       msgs.push({role:'user',content:txt});
     }
-    const model=b64?'llama-3.2-11b-vision-preview':'llama-3.3-70b-versatile';
+    const model=b64?aiVisionModel():aiTextModel();
     // Use Netlify proxy to avoid CORS
     const aiHeaders={
       'Content-Type':'application/json',
-      'X-Provider':'groq'
+      'X-Provider':aiProvider()
     };
     if(gk)aiHeaders['X-API-Key']=gk;
 
@@ -1812,9 +2047,9 @@ ${habits.map(h=>'• '+h.name).join('\n')||'(אין)'}
   }catch(err){
     const msg=err.message||'';
     if(msg.includes('Quota')||msg.includes('quota')||msg.includes('RESOURCE_EXHAUSTED')||msg.includes('exceeded')){
-      addMsg('⏳ הגעת למכסה של Gemini. המתן כמה דקות או צור Key חדש ב-aistudio.google.com','ai');
+      addMsg('⏳ הגעת למכסה של המודל. המתן כמה דקות או החלף/רענן את ה-API Key.','ai');
     }else if(msg.includes('API_KEY')||msg.includes('API key')||msg.includes('401')){
-      addMsg('🔑 אין/שגוי API Key. הגדר GROQ_API_KEY ב-Netlify או הזן מפתח מקומי בהגדרות.','ai');
+      addMsg('🔑 אין/שגוי API Key. הזן מפתח Grok/API Key בהגדרות או הגדירו אותו ב-Netlify.','ai');
     }else if(msg.includes('not found')||msg.includes('404')){
       addMsg('⚠️ המודל לא זמין. נסה שוב בעוד רגע.','ai');
     }else if(msg.includes('fetch')||msg.includes('network')||msg.includes('Failed')){
@@ -1840,6 +2075,17 @@ function eventHours(ev){
   if(ev.type==='studies')return 2;
   if(ev.type==='personal')return 1.5;
   return 2;
+}
+function getTaskStatsSummary(){
+  const rootTasks=tasks.filter(t=>!t.parentId);
+  const completed=rootTasks.filter(t=>t.done).length;
+  const total=rootTasks.length;
+  const completionRate=total?Math.round((completed/total)*100):0;
+  const deferred=[...rootTasks].filter(t=>!t.done && (t.deferCount>0 || (t.dueDate&&t.dueDate<todayStr()))).sort((a,b)=>(b.deferCount||0)-(a.deferCount||0));
+  return {
+    completionRate: completionRate+'%',
+    mostDeferred: deferred[0]?.text || 'אין מטלות דחופות'
+  };
 }
 function renderWeeklyStats(){
   const base=parseDS(todayStr());
@@ -1904,6 +2150,10 @@ function renderWeeklyStats(){
     document.getElementById('stat-m-hours').textContent = Math.round(monthShiftHours*10)/10;
     document.getElementById('stat-m-money').textContent = Math.round(monthMoney).toLocaleString('he-IL') + ' ₪';
   }
+
+  const taskStats=getTaskStatsSummary();
+  document.getElementById('task-completion-rate').textContent=taskStats.completionRate;
+  document.getElementById('task-most-deferred').textContent=taskStats.mostDeferred;
 }
 
 async function handleAIAction(p, rawReply){
@@ -1993,7 +2243,7 @@ async function handleAIAction(p, rawReply){
       addMsg('✓ הוספתי לפינקס!','ai');return true;
     }
     case 'task':{
-      addTask(p.text);
+      addTask(p.text,{dueDate:p.dueDate||'',priority:p.priority||'medium'});
       addMsg('✓ הוספתי לרשימת המטלות: '+p.text,'ai');
       return true;
     }
